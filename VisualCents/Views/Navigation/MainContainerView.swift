@@ -11,17 +11,17 @@ import SwiftData
 /// Main container with smooth drawer navigation
 struct MainContainerView: View {
     // MARK: - Environment
-    
+
     @Environment(\.appTheme) private var theme
-    
+
     // MARK: - State
-    
+
     @State private var isMenuOpen = false
     @State private var selectedMenuItem: MenuItem = .dashboard
     @State private var dragProgress: CGFloat = 0
-    
+
     // MARK: - Constants
-    
+
     private let menuWidth: CGFloat = 280
     private let edgeDragWidth: CGFloat = 30
     private let minDragToOpen: CGFloat = 60
@@ -49,45 +49,49 @@ struct MainContainerView: View {
                 // Background - use theme background
                 theme.background
                     .ignoresSafeArea()
-                
+
                 // Side Menu
                 SideMenuView(
                     selectedItem: $selectedMenuItem,
-                    onItemSelected: { _ in
+                    onItemSelected: { item in
+                        print("🔍 Menu item tapped: \(item.title)")
+                        print("🔍 Current selectedMenuItem: \(selectedMenuItem.title)")
                         closeMenu()
+                        print("🔍 After closeMenu, selectedMenuItem: \(selectedMenuItem.title)")
                     }
                 )
                 .frame(width: menuWidth)
-                .offset(x: -menuWidth * (1 - openProgress) * 0.3)
-                .opacity(0.3 + openProgress * 0.7)
-                
+                .clipped()
+
                 // Main Content
                 mainContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .offset(x: openProgress * menuWidth)
                     .clipShape(
                         RoundedRectangle(
                             cornerRadius: openProgress * 20,
                             style: .continuous
                         )
                     )
-                    .scaleEffect(1 - openProgress * 0.05)
                     .shadow(
                         color: Color.black.opacity(openProgress * 0.3),
                         radius: openProgress * 20,
                         x: -openProgress * 5, y: 0
                     )
                     .overlay(
-                        // Dim overlay
+                        // Dim overlay - 只覆盖主内容，不覆盖菜单
                         Color.black
                             .opacity(openProgress * 0.3)
-                            .ignoresSafeArea()
+                            .frame(maxWidth: .infinity)
+                            .offset(x: openProgress * menuWidth)
                             .allowsHitTesting(openProgress > 0.1)
                             .onTapGesture {
                                 closeMenu()
                             }
                     )
             }
-            .offset(x: contentXOffset)
-            .animation(.interactiveSpring(response: 0.35, dampingFraction: 0.86, blendDuration: 0.25), value: isMenuOpen)
+            .animation(.spring(response: 0.4, dampingFraction: 0.8), value: isMenuOpen)
+            .animation(.easeInOut(duration: 0.3), value: selectedMenuItem)
         }
     }
     
@@ -98,42 +102,79 @@ struct MainContainerView: View {
                 switch selectedMenuItem {
                 case .dashboard:
                     DashboardView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 case .statistics:
                     StatisticsView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 case .savings:
                     SavingsView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 case .assets:
                     AssetManagementView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 case .budget:
                     BudgetPlanningView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 case .transactions:
                     TransactionListView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
+                case .organism:
+                    FinancialOrganismView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
+                case .organicUI:
+                    OrganicUIDemoView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
+                case .visualDemo:
+                    VisualEffectsDemoView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 case .settings:
                     SettingsView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .animation(.spring(response: 0.35, dampingFraction: 0.8), value: selectedMenuItem)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        toggleMenu()
-                    } label: {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundStyle(theme.textPrimary)
-                    }
-                }
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(theme.background, for: .navigationBar)
             .toolbarColorScheme(isDarkTheme ? .dark : .light, for: .navigationBar)
+            .environment(\.openSideMenu, SideMenuOpenAction(action: toggleMenu))
         }
     }
-    
+
     private var isDarkTheme: Bool {
-        // Simple heuristic for toolbar brightness
-        if theme.id == "soft_pop" || theme.id == "oilpaint" {
-            return true
-        }
+        // Theme is now light cream color
         return false
     }
     
@@ -178,22 +219,22 @@ struct MainContainerView: View {
     
     private func toggleMenu() {
         theme.mediumHaptic()
-        withAnimation(.interactiveSpring(response: 0.35, dampingFraction: 0.86)) {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
             isMenuOpen.toggle()
             dragProgress = 0
         }
     }
-    
+
     private func openMenu() {
         theme.lightHaptic()
-        withAnimation(.interactiveSpring(response: 0.35, dampingFraction: 0.86)) {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
             isMenuOpen = true
             dragProgress = 0
         }
     }
-    
+
     private func closeMenu() {
-        withAnimation(.interactiveSpring(response: 0.35, dampingFraction: 0.86)) {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
             isMenuOpen = false
             dragProgress = 0
         }

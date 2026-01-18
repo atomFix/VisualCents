@@ -10,44 +10,19 @@ import SwiftUI
 /// Settings and preferences view
 struct SettingsView: View {
     // MARK: - Environment
-    
-    @Environment(ThemeManager.self) private var themeManager: ThemeManager?
+
     @Environment(\.appTheme) private var theme
-    
+
     // MARK: - State
-    
+
     @AppStorage("currency") private var currency = "CNY"
     @AppStorage("hapticEnabled") private var hapticEnabled = true
     @AppStorage("notificationsEnabled") private var notificationsEnabled = true
-    
-    // MARK: - Computed
-    
-    private var currentThemeId: AvailableTheme {
-        themeManager?.currentThemeId ?? .softPop
-    }
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         List {
-            // Theme Selection
-            Section {
-                ForEach(AvailableTheme.allCases) { availableTheme in
-                    ThemeSelectionRow(
-                        theme: availableTheme,
-                        isSelected: currentThemeId == availableTheme
-                    ) {
-                        theme.mediumHaptic()
-                        themeManager?.setTheme(availableTheme)
-                    }
-                }
-            } header: {
-                Text("外观主题")
-                    .font(theme.customFont(size: 12, weight: .medium))
-                    .foregroundStyle(theme.textTertiary)
-            }
-            .listRowBackground(theme.cardBackground)
-            
             // General Settings
             Section {
                 // Currency
@@ -172,63 +147,6 @@ struct SettingsView: View {
         case "USD": return "美元 $"
         case "EUR": return "欧元 €"
         default: return currency
-        }
-    }
-}
-
-// MARK: - Theme Selection Row
-
-struct ThemeSelectionRow: View {
-    @Environment(\.appTheme) private var theme
-    
-    let selectedTheme: AvailableTheme
-    let isSelected: Bool
-    let action: () -> Void
-    
-    init(theme: AvailableTheme, isSelected: Bool, action: @escaping () -> Void) {
-        self.selectedTheme = theme
-        self.isSelected = isSelected
-        self.action = action
-    }
-    
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 14) {
-                // Theme preview circle
-                ZStack {
-                    Circle()
-                        .fill(selectedTheme.theme.primaryAccent)
-                        .frame(width: 36, height: 36)
-                    
-                    Circle()
-                        .fill(selectedTheme.theme.background)
-                        .frame(width: 18, height: 18)
-                }
-                .overlay(
-                    Circle()
-                        .stroke(isSelected ? theme.primaryAccent : Color.clear, lineWidth: 2)
-                        .frame(width: 42, height: 42)
-                )
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(selectedTheme.displayName)
-                        .font(theme.customFont(size: 16, weight: .medium))
-                        .foregroundStyle(theme.textPrimary)
-                    
-                    Text(selectedTheme == .softPop ? "深色活力" : "浅色简洁")
-                        .font(theme.customFont(size: 12, weight: .regular))
-                        .foregroundStyle(theme.textTertiary)
-                }
-                
-                Spacer()
-                
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 22))
-                        .foregroundStyle(theme.primaryAccent)
-                }
-            }
-            .padding(.vertical, 6)
         }
     }
 }

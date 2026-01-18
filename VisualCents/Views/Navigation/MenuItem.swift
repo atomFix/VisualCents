@@ -15,10 +15,13 @@ enum MenuItem: String, CaseIterable, Identifiable {
     case assets = "assets"
     case transactions = "transactions"
     case budget = "budget"
+    case organism = "organism"
+    case organicUI = "organicUI"
+    case visualDemo = "visualDemo"
     case settings = "settings"
-    
+
     var id: String { rawValue }
-    
+
     var title: String {
         switch self {
         case .dashboard: return "首页"
@@ -27,10 +30,13 @@ enum MenuItem: String, CaseIterable, Identifiable {
         case .assets: return "资产"
         case .transactions: return "明细"
         case .budget: return "预算"
+        case .organism: return "Financial Organism"
+        case .organicUI: return "有机 UI"
+        case .visualDemo: return "视觉演示"
         case .settings: return "设置"
         }
     }
-    
+
     var icon: String {
         switch self {
         case .dashboard: return "house.fill"
@@ -39,10 +45,13 @@ enum MenuItem: String, CaseIterable, Identifiable {
         case .assets: return "creditcard.fill"
         case .transactions: return "list.bullet.rectangle.fill"
         case .budget: return "dollarsign.circle.fill"
+        case .organism: return "drop.fill"
+        case .organicUI: return "drop.circle.fill"
+        case .visualDemo: return "sparkles"
         case .settings: return "gearshape.fill"
         }
     }
-    
+
     /// Returns the color for the menu item based on the active theme
     func themeColor(for theme: any AppTheme) -> Color {
         switch self {
@@ -52,6 +61,9 @@ enum MenuItem: String, CaseIterable, Identifiable {
         case .assets: return theme.incomeGreen
         case .transactions: return theme.expenseRed
         case .budget: return theme.incomeGreen
+        case .organism: return Color.cyan
+        case .organicUI: return Color.blue
+        case .visualDemo: return Color.purple
         case .settings: return theme.textSecondary
         }
     }

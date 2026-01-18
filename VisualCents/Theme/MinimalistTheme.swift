@@ -16,49 +16,49 @@ struct MinimalistTheme: AppTheme {
     let id = "minimalist"
     
     // MARK: - Colors
-    
+
     var background: Color {
-        Color(red: 0.96, green: 0.96, blue: 0.97)
+        Color(red: 0.10, green: 0.10, blue: 0.11)
     }
-    
+
     var cardBackground: Color {
-        .white
+        Color(red: 0.15, green: 0.15, blue: 0.17)
     }
-    
+
     var cardBackgroundElevated: Color {
-        Color(red: 0.98, green: 0.98, blue: 0.98)
+        Color(red: 0.19, green: 0.19, blue: 0.21)
     }
-    
+
     var primaryAccent: Color {
         Color(red: 0.0, green: 0.48, blue: 1.0) // iOS Blue
     }
-    
+
     var secondaryAccent: Color {
         Color(red: 0.35, green: 0.35, blue: 0.85)
     }
-    
+
     var incomeGreen: Color {
         Color(red: 0.2, green: 0.78, blue: 0.35) // iOS Green
     }
-    
+
     var expenseRed: Color {
         Color(red: 1.0, green: 0.23, blue: 0.19) // iOS Red
     }
-    
+
     var warningYellow: Color {
         Color(red: 1.0, green: 0.8, blue: 0.0)
     }
     
     var textPrimary: Color {
-        Color(red: 0.1, green: 0.1, blue: 0.1)
+        Color(red: 1.0, green: 1.0, blue: 1.0)
     }
-    
+
     var textSecondary: Color {
-        Color(red: 0.4, green: 0.4, blue: 0.45)
+        Color(red: 0.75, green: 0.75, blue: 0.77)
     }
-    
+
     var textTertiary: Color {
-        Color(red: 0.6, green: 0.6, blue: 0.65)
+        Color(red: 0.50, green: 0.50, blue: 0.52)
     }
     
     // MARK: - Typography

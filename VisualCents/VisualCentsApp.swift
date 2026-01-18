@@ -70,12 +70,10 @@ struct VisualCentsApp: App {
 
 struct ThemedRootView: View {
     @Bindable var themeManager: ThemeManager
-    
+
     var body: some View {
         ContentView()
             .environment(themeManager)
             .environment(\.appTheme, themeManager.current)
-            // Rebuild the view tree when theme changes to ensure all @Environment(\.appTheme) users update
-            .id(themeManager.currentThemeId)
     }
 }

@@ -2,53 +2,53 @@
 //  CharcoalTheme.swift
 //  VisualCents
 //
-//  Da Vinci notebook inspired sketch theme with pencil strokes
+//  Warm cream paper sketch theme with pencil strokes
 //
 
 import SwiftUI
 
-/// Charcoal / Pencil Sketch theme (Da Vinci notebook inspired)
+/// Warm Cream / Pencil Sketch theme (vibrant and clear)
 struct CharcoalTheme: AppTheme {
-    
+
     // MARK: - Identity
-    
+
     let name = "素描风格"
     let id = "charcoal"
-    
-    // MARK: - Color Palette (Grayscale + Red Accent)
-    
-    /// Aged paper off-white
-    let background = Color(red: 0.96, green: 0.94, blue: 0.90)
-    
-    /// Pure white with transparency
-    let cardBackground = Color.white.opacity(0.85)
-    
-    /// Slight gray
-    let cardBackgroundElevated = Color(red: 0.92, green: 0.90, blue: 0.87)
-    
-    /// Graphite black
-    let primaryAccent = Color(red: 0.15, green: 0.15, blue: 0.15)
-    
-    /// Charcoal gray
-    let secondaryAccent = Color(red: 0.40, green: 0.40, blue: 0.40)
-    
-    /// Dark green ink
-    let incomeGreen = Color(red: 0.20, green: 0.35, blue: 0.20)
-    
-    /// Red chalk (Leonardo's style)
-    let expenseRed = Color(red: 0.70, green: 0.25, blue: 0.20)
-    
-    /// Sepia warning
-    let warningYellow = Color(red: 0.65, green: 0.50, blue: 0.25)
-    
-    /// Dark graphite
-    let textPrimary = Color(red: 0.12, green: 0.12, blue: 0.12)
-    
-    /// Medium gray
-    let textSecondary = Color(red: 0.35, green: 0.35, blue: 0.35)
-    
-    /// Light gray
-    let textTertiary = Color(red: 0.55, green: 0.55, blue: 0.55)
+
+    // MARK: - Color Palette (Warm Cream + Dark Pencil)
+
+    /// Warm cream background - 活力米白色背景
+    let background = Color(red: 0.97, green: 0.95, blue: 0.92)
+
+    /// Light cream card - 浅色卡片
+    let cardBackground = Color(red: 1.0, green: 0.98, blue: 0.95)
+
+    /// White for elevated cards - 提升卡片
+    let cardBackgroundElevated = Color.white
+
+    /// Vibrant purple accent - 紫色主色
+    let primaryAccent = Color(red: 0.55, green: 0.35, blue: 0.85)
+
+    /// Bright blue accent - 蓝色次色
+    let secondaryAccent = Color(red: 0.30, green: 0.55, blue: 0.95)
+
+    /// Bright green for income - 收入绿
+    let incomeGreen = Color(red: 0.30, green: 0.70, blue: 0.45)
+
+    /// Vibrant red for expense - 支出红
+    let expenseRed = Color(red: 0.95, green: 0.30, blue: 0.35)
+
+    /// Bright yellow warning - 警告黄
+    let warningYellow = Color(red: 1.0, green: 0.70, blue: 0.20)
+
+    /// Dark text - high contrast - 深色主文字
+    let textPrimary = Color(red: 0.20, green: 0.20, blue: 0.22)
+
+    /// Medium gray text - 中灰次要文字
+    let textSecondary = Color(red: 0.45, green: 0.45, blue: 0.48)
+
+    /// Light gray text - 浅灰三级文字
+    let textTertiary = Color(red: 0.60, green: 0.60, blue: 0.62)
     
     // MARK: - Metrics
     
@@ -59,19 +59,19 @@ struct CharcoalTheme: AppTheme {
     let paddingSmall: CGFloat = 8
     let paddingLarge: CGFloat = 24
     
-    // MARK: - Typography (Handwritten/Monospace)
-    
+    // MARK: - Typography (Modern & Clean)
+
     func customFont(size: CGFloat, weight: Font.Weight) -> Font {
-        // Use monospaced for that technical drawing feel
-        .system(size: size, weight: weight, design: .monospaced)
+        // Use rounded font for modern, friendly feel
+        .system(size: size, weight: weight, design: .rounded)
     }
-    
+
     func heroFont(size: CGFloat) -> Font {
-        .system(size: size, weight: .regular, design: .serif)
+        .system(size: size, weight: .bold, design: .rounded)
     }
-    
+
     func amountFont(size: CGFloat) -> Font {
-        .system(size: size, weight: .medium, design: .monospaced)
+        .system(size: size, weight: .semibold, design: .rounded)
     }
     
     // MARK: - Shape Modifiers
@@ -82,39 +82,39 @@ struct CharcoalTheme: AppTheme {
                 .padding(padding)
                 .background(
                     ZStack {
-                        // Paper background
+                        // Dark card background
                         RoundedRectangle(cornerRadius: cardCornerRadius)
                             .fill(cardBackground)
-                        
-                        // Paper grain texture simulation
+
+                        // Subtle texture
                         RoundedRectangle(cornerRadius: cardCornerRadius)
                             .fill(
                                 AngularGradient(
                                     colors: [
-                                        Color.black.opacity(0.02),
+                                        Color.white.opacity(0.02),
                                         Color.clear,
-                                        Color.black.opacity(0.01),
+                                        Color.white.opacity(0.01),
                                         Color.clear
                                     ],
                                     center: .center
                                 )
                             )
-                        
-                        // Sketchy border - main stroke
+
+                        // White chalk border - main stroke
                         RoundedRectangle(cornerRadius: cardCornerRadius)
                             .stroke(
-                                primaryAccent,
+                                Color.white.opacity(0.15),
                                 style: StrokeStyle(
                                     lineWidth: 1.5,
                                     lineCap: .round,
                                     lineJoin: .round
                                 )
                             )
-                        
+
                         // Second pass - slightly offset for hand-drawn feel
                         RoundedRectangle(cornerRadius: cardCornerRadius + 1)
                             .stroke(
-                                primaryAccent.opacity(0.3),
+                                Color.white.opacity(0.05),
                                 style: StrokeStyle(
                                     lineWidth: 0.8,
                                     lineCap: .round,
@@ -124,29 +124,30 @@ struct CharcoalTheme: AppTheme {
                             .offset(x: 0.5, y: 0.5)
                     }
                 )
-                // Hard shadow (no blur) - like a stencil
+                // Subtle shadow
                 .background(
                     RoundedRectangle(cornerRadius: cardCornerRadius)
-                        .fill(Color.black.opacity(0.08))
-                        .offset(x: 3, y: 3)
+                        .fill(Color.black.opacity(0.3))
+                        .offset(x: 2, y: 2)
+                        .blur(radius: 1)
                 )
         )
     }
     
     func styleButton<Content: View>(_ content: Content, type: ButtonType) -> AnyView {
         let (fill, stroke) = buttonStyle(for: type)
-        
+
         return AnyView(
             content
                 .padding(.horizontal, 18)
                 .padding(.vertical, 12)
                 .background(
                     ZStack {
-                        // Scribble fill (cross-hatch simulation)
+                        // Button fill
                         RoundedRectangle(cornerRadius: buttonCornerRadius)
                             .fill(fill)
-                        
-                        // Pencil border strokes
+
+                        // White chalk border strokes
                         RoundedRectangle(cornerRadius: buttonCornerRadius)
                             .stroke(
                                 stroke,
@@ -156,11 +157,11 @@ struct CharcoalTheme: AppTheme {
                                     lineJoin: .round
                                 )
                             )
-                        
-                        // Double-pass pencil effect
+
+                        // Double-pass chalk effect
                         RoundedRectangle(cornerRadius: buttonCornerRadius)
                             .stroke(
-                                stroke.opacity(0.4),
+                                stroke.opacity(0.3),
                                 style: StrokeStyle(
                                     lineWidth: 1,
                                     lineCap: .round,
@@ -170,25 +171,26 @@ struct CharcoalTheme: AppTheme {
                             .offset(x: -0.5, y: -0.5)
                     }
                 )
-                // Hard shadow offset
+                // Subtle shadow
                 .background(
                     RoundedRectangle(cornerRadius: buttonCornerRadius)
-                        .fill(Color.black.opacity(0.1))
+                        .fill(Color.black.opacity(0.25))
                         .offset(x: 2, y: 2)
+                        .blur(radius: 1)
                 )
         )
     }
-    
+
     private func buttonStyle(for type: ButtonType) -> (Color, Color) {
         switch type {
         case .primary:
-            return (primaryAccent.opacity(0.1), primaryAccent)
+            return (primaryAccent.opacity(0.15), Color.white.opacity(0.3))
         case .secondary:
-            return (Color.clear, secondaryAccent)
+            return (Color.clear, Color.white.opacity(0.2))
         case .keypad:
-            return (Color.white.opacity(0.5), primaryAccent.opacity(0.6))
+            return (Color.white.opacity(0.08), Color.white.opacity(0.15))
         case .destructive:
-            return (expenseRed.opacity(0.1), expenseRed)
+            return (expenseRed.opacity(0.2), expenseRed)
         }
     }
     
@@ -196,15 +198,15 @@ struct CharcoalTheme: AppTheme {
         AnyView(
             ZStack {
                 background
-                
-                // Paper grain noise simulation
+
+                // Subtle chalk dust texture
                 Rectangle()
                     .fill(
                         AngularGradient(
                             colors: [
-                                Color.black.opacity(0.015),
+                                Color.white.opacity(0.015),
                                 Color.clear,
-                                Color.black.opacity(0.01),
+                                Color.white.opacity(0.01),
                                 Color.clear
                             ],
                             center: .center
@@ -213,15 +215,15 @@ struct CharcoalTheme: AppTheme {
             }
         )
     }
-    
+
     func styleNavBackground() -> AnyView {
         AnyView(
             background
                 .overlay(
-                    // Top edge line like a notebook
+                    // Top edge line like a chalkboard
                     VStack {
                         Rectangle()
-                            .fill(primaryAccent.opacity(0.2))
+                            .fill(Color.white.opacity(0.1))
                             .frame(height: 1)
                         Spacer()
                     }
@@ -232,14 +234,14 @@ struct CharcoalTheme: AppTheme {
 
 // MARK: - Sketchy Divider
 
-/// A hand-drawn style divider line
+/// A hand-drawn style divider line (chalk on dark board)
 struct SketchyDivider: View {
     var body: some View {
         GeometryReader { geo in
             Path { path in
                 let y = geo.size.height / 2
                 path.move(to: CGPoint(x: 0, y: y))
-                
+
                 // Create slightly wavy line
                 let segments = Int(geo.size.width / 20)
                 for i in 0...segments {
@@ -248,7 +250,7 @@ struct SketchyDivider: View {
                     path.addLine(to: CGPoint(x: x, y: y + yOffset))
                 }
             }
-            .stroke(Color.black.opacity(0.3), style: StrokeStyle(lineWidth: 1, lineCap: .round))
+            .stroke(Color.white.opacity(0.15), style: StrokeStyle(lineWidth: 1, lineCap: .round))
         }
         .frame(height: 2)
     }

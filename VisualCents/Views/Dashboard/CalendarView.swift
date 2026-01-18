@@ -22,23 +22,51 @@ struct CalendarView: View {
     private let weekdays = ["一", "二", "三", "四", "五", "六", "日"]
     
     var body: some View {
-        VStack(spacing: 12) {
-            // Header
-            header
-            
-            // Weekday labels
-            weekdayLabels
-            
-            // Calendar grid
-            if isExpanded {
-                monthGrid
-            } else {
-                weekGrid
+        ZStack {
+            // 背景
+            RoundedRectangle(cornerRadius: theme.cardCornerRadius)
+                .fill(theme.cardBackground)
+
+            // 手绘风格边框
+            RoundedRectangle(cornerRadius: theme.cardCornerRadius)
+                .stroke(
+                    theme.textTertiary.opacity(0.2),
+                    style: StrokeStyle(
+                        lineWidth: 1.5,
+                        lineCap: .round,
+                        dash: [8, 4]
+                    )
+                )
+
+            // 第二层边框（略微偏移）
+            RoundedRectangle(cornerRadius: theme.cardCornerRadius + 1)
+                .stroke(
+                    theme.textTertiary.opacity(0.1),
+                    style: StrokeStyle(
+                        lineWidth: 0.8,
+                        lineCap: .round,
+                        dash: [12, 6]
+                    )
+                )
+                .offset(x: 0.5, y: 0.5)
+
+            // 内容
+            VStack(spacing: 12) {
+                // Header
+                header
+
+                // Weekday labels
+                weekdayLabels
+
+                // Calendar grid
+                if isExpanded {
+                    monthGrid
+                } else {
+                    weekGrid
+                }
             }
+            .padding(theme.padding)
         }
-        .padding(theme.padding)
-        .background(theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: theme.cardCornerRadius))
     }
     
     // MARK: - Header

@@ -158,14 +158,21 @@ struct ScanReceiptView: View {
                             .stroke(theme.cardBackgroundElevated, lineWidth: 1)
                     )
                 
-                // Processing indicator
+                // Processing indicator with Shimmer effect
                 if ocrService.isProcessing {
-                    HStack(spacing: 12) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: theme.primaryAccent))
-                        Text("正在识别...")
+                    VStack(spacing: 16) {
+                        Text("正在识别小票...")
                             .font(theme.customFont(size: 14, weight: .medium))
                             .foregroundStyle(theme.textSecondary)
+
+                        // Shimmer 骨架屏
+                        VStack(spacing: 12) {
+                            ShimmerLoadingView(width: .infinity, height: 20)
+                            ShimmerLoadingView(width: .infinity, height: 16)
+                            ShimmerLoadingView(width: 120, height: 16)
+                            ShimmerLoadingView(width: .infinity, height: 40, cornerRadius: 12)
+                        }
+                        .padding()
                     }
                     .padding()
                 } else if ocrResult != nil {
@@ -305,7 +312,7 @@ struct ScanReceiptView: View {
             showError = true
             return
         }
-        
+
         let transaction = Transaction(
             amount: amount,
             merchantName: merchantName.isEmpty ? "OCR扫描" : merchantName,
@@ -315,8 +322,12 @@ struct ScanReceiptView: View {
             source: .ocr,
             category: nil
         )
-        
+
         modelContext.insert(transaction)
+
+        // 🎉 添加庆祝特效
+        MicroInteractionService.shared.celebrateTransactionSaved()
+
         theme.successHaptic()
         dismiss()
     }

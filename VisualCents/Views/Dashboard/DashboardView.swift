@@ -14,6 +14,7 @@ struct DashboardView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Environment(\.appTheme) private var theme
+    @Environment(\.openSideMenu) private var openSideMenu
     @Query(sort: \Transaction.date, order: .reverse) private var transactions: [Transaction]
     @Query private var budgets: [Budget]
     
@@ -48,9 +49,16 @@ struct DashboardView: View {
     }
     
     // MARK: - Body
-    
+
     var body: some View {
-        ScrollView {
+        ZStack {
+            // 粒子背景层 - 增加粒子数量和动画速度
+            ParticleBackgroundView(particleCount: 40, animationSpeed: 1.2)
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+
+            // 主内容层
+            ScrollView {
             VStack(spacing: theme.padding) {
                 // Month Summary Card
                 summaryCard
@@ -106,7 +114,22 @@ struct DashboardView: View {
             }
             
             ToolbarItem(placement: .navigationBarLeading) {
+                // Menu Button
+                Button {
+                    openSideMenu()
+                } label: {
+                    Image(systemName: "line.3.horizontal")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundStyle(theme.textPrimary)
+                        .padding(8)
+                        .background(theme.cardBackground.opacity(0.5))
+                        .clipShape(Circle())
+                }
+            }
+            
+            ToolbarItem(placement: .principal) {
                 MonthNavigator(selectedDate: $selectedDate)
+                    .scaleEffect(0.9) // Adjust scale to fit nicely in title area
             }
         }
         .sheet(isPresented: $showAddTransaction) {
@@ -118,36 +141,57 @@ struct DashboardView: View {
             ScanReceiptView()
                 .presentationDetents([.large])
         }
+        }
     }
     
     // MARK: - Summary Card
-    
+
     private var summaryCard: some View {
-        HStack(spacing: theme.padding) {
-            // Income
-            SummaryItem(
-                title: "收入",
-                amount: monthData.totalIncome,
-                color: theme.incomeGreen
-            )
-            
-            // Expense
-            SummaryItem(
-                title: "支出",
-                amount: monthData.totalExpense,
-                color: theme.expenseRed
-            )
-            
-            // Balance
-            SummaryItem(
-                title: "结余",
-                amount: monthData.balance,
-                color: monthData.balance >= 0 ? theme.incomeGreen : theme.expenseRed
-            )
+        SketchyCardView(cornerRadius: theme.cardCornerRadius) {
+            HStack(spacing: theme.padding) {
+                // Income
+                SketchySummaryItem(
+                    title: "收入",
+                    amount: monthData.totalIncome,
+                    color: theme.incomeGreen,
+                    icon: "arrow.up.circle.fill"
+                )
+
+                // 垂直分割线
+                Rectangle()
+                    .fill(theme.textTertiary.opacity(0.2))
+                    .frame(width: 1)
+                    .overlay(
+                        Rectangle()
+                            .stroke(theme.textTertiary.opacity(0.1), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    )
+
+                // Expense
+                SketchySummaryItem(
+                    title: "支出",
+                    amount: monthData.totalExpense,
+                    color: theme.expenseRed,
+                    icon: "arrow.down.circle.fill"
+                )
+
+                // 垂直分割线
+                Rectangle()
+                    .fill(theme.textTertiary.opacity(0.2))
+                    .frame(width: 1)
+                    .overlay(
+                        Rectangle()
+                            .stroke(theme.textTertiary.opacity(0.1), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
+                    )
+
+                // Balance
+                SketchySummaryItem(
+                    title: "结余",
+                    amount: monthData.balance,
+                    color: monthData.balance >= 0 ? theme.incomeGreen : theme.expenseRed,
+                    icon: "dollarsign.circle.fill"
+                )
+            }
         }
-        .padding(theme.padding)
-        .background(theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: theme.cardCornerRadius))
     }
     
     // MARK: - Timeline Section
@@ -176,38 +220,33 @@ struct DashboardView: View {
     }
     
     // MARK: - Empty State
-    
+
     private var emptyDayState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "tray")
-                .font(.system(size: 40))
-                .foregroundStyle(theme.textTertiary)
-            
-            Text("今天暂无交易")
-                .font(theme.customFont(size: 15, weight: .medium))
-                .foregroundStyle(theme.textSecondary)
-            
-            Button {
-                theme.mediumHaptic()
-                showAddTransaction = true
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 12, weight: .bold))
-                    Text("添加一笔")
-                        .font(theme.customFont(size: 14, weight: .semibold))
+        SketchyCardView(cornerRadius: theme.cardCornerRadius) {
+            VStack(spacing: 20) {
+                Image(systemName: "tray")
+                    .font(.system(size: 50))
+                    .foregroundStyle(theme.textTertiary.opacity(0.6))
+
+                Text("今天暂无交易")
+                    .font(theme.customFont(size: 17, weight: .semibold))
+                    .foregroundStyle(theme.textSecondary)
+
+                SketchyButton {
+                    HStack(spacing: 8) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 16, weight: .semibold))
+                        Text("添加第一笔")
+                            .font(theme.customFont(size: 16, weight: .semibold))
+                    }
+                } action: {
+                    theme.mediumHaptic()
+                    showAddTransaction = true
                 }
-                .foregroundStyle(.white)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 10)
-                .background(theme.primaryAccent)
-                .clipShape(Capsule())
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 32)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
-        .background(theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: theme.cardCornerRadius))
     }
     
     // MARK: - Helpers
@@ -232,35 +271,110 @@ struct DashboardView: View {
 struct MonthNavigator: View {
     @Environment(\.appTheme) private var theme
     @Binding var selectedDate: Date
-    
+
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
+            // 左箭头按钮 - 手绘风格
             Button {
                 navigateMonth(by: -1)
             } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(theme.textSecondary)
+                ZStack {
+                    Circle()
+                        .fill(theme.cardBackgroundElevated)
+                        .frame(width: 32, height: 32)
+
+                    // 手绘圆圈边框
+                    Circle()
+                        .stroke(
+                            theme.textTertiary.opacity(0.3),
+                            style: StrokeStyle(lineWidth: 1.2, dash: [3, 2])
+                        )
+                        .frame(width: 32, height: 32)
+
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(theme.textSecondary)
+                }
             }
-            
+
+            // 日期显示
+            Text(formatDate())
+                .font(theme.customFont(size: 16, weight: .semibold))
+                .foregroundStyle(theme.textPrimary)
+                .frame(minWidth: 80)
+                .padding(.vertical, 6)
+                .padding(.horizontal, 12)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(theme.cardBackgroundElevated)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(
+                            theme.textTertiary.opacity(0.2),
+                            style: StrokeStyle(lineWidth: 1, dash: [4, 3])
+                        )
+                )
+                .onTapGesture {
+                    theme.lightHaptic()
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selectedDate = Date()
+                    }
+                }
+
+            // 右箭头按钮 - 手绘风格
             Button {
                 navigateMonth(by: 1)
             } label: {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(canGoForward ? theme.textSecondary : theme.textTertiary)
+                ZStack {
+                    Circle()
+                        .fill(theme.cardBackgroundElevated)
+                        .frame(width: 32, height: 32)
+
+                    // 手绘圆圈边框
+                    Circle()
+                        .stroke(
+                            theme.textTertiary.opacity(0.3),
+                            style: StrokeStyle(lineWidth: 1.2, dash: [3, 2])
+                        )
+                        .frame(width: 32, height: 32)
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(canGoForward ? theme.textSecondary : theme.textTertiary)
+                }
             }
             .disabled(!canGoForward)
+            .opacity(canGoForward ? 1 : 0.5)
         }
+        .padding(.vertical, 6)
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(theme.cardBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    theme.textTertiary.opacity(0.15),
+                    style: StrokeStyle(lineWidth: 1.5, dash: [8, 4])
+                )
+        )
     }
-    
+
+    private func formatDate() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy年M月"
+        return formatter.string(from: selectedDate)
+    }
+
     private var canGoForward: Bool {
         let calendar = Calendar.current
         let currentMonth = calendar.dateInterval(of: .month, for: Date())
         let selectedMonth = calendar.dateInterval(of: .month, for: selectedDate)
         return selectedMonth?.start ?? Date() < currentMonth?.start ?? Date()
     }
-    
+
     private func navigateMonth(by value: Int) {
         theme.lightHaptic()
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
@@ -271,36 +385,50 @@ struct MonthNavigator: View {
     }
 }
 
-// MARK: - Summary Item
+// MARK: - Sketchy Summary Item
 
-struct SummaryItem: View {
+struct SketchySummaryItem: View {
     @Environment(\.appTheme) private var theme
-    
+
     let title: String
     let amount: Decimal
     let color: Color
-    
+    let icon: String
+
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 8) {
+            // 图标
+            ZStack {
+                Circle()
+                    .fill(color.opacity(0.15))
+                    .frame(width: 48, height: 48)
+
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundStyle(color)
+            }
+
+            // 标题
             Text(title)
-                .font(theme.customFont(size: 11, weight: .medium))
+                .font(theme.customFont(size: 12, weight: .medium))
                 .foregroundStyle(theme.textTertiary)
-            
-            Text(formatAmount())
-                .font(theme.amountFont(size: 16))
-                .foregroundStyle(color)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
+
+            // 金额（使用数字滚动）
+            NumberTicker(
+                value: doubleValue,
+                currency: "¥",
+                precision: 0
+            )
+            .font(theme.amountFont(size: 18))
+            .foregroundStyle(color)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity)
     }
-    
-    private func formatAmount() -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = Locale.current
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: amount as NSDecimalNumber) ?? "¥0"
+
+    private var doubleValue: Double {
+        NSDecimalNumber(decimal: amount).doubleValue
     }
 }
 
@@ -308,69 +436,114 @@ struct SummaryItem: View {
 
 struct TransactionCard: View {
     @Environment(\.appTheme) private var theme
-    
+
     let transaction: Transaction
-    
+
     var body: some View {
-        HStack(spacing: 14) {
-            // Category Icon
-            ZStack {
-                Circle()
-                    .fill(categoryColor.opacity(0.2))
-                    .frame(width: 44, height: 44)
-                
-                Image(systemName: transaction.category?.iconName ?? "ellipsis.circle")
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(categoryColor)
-            }
-            
-            // Details
-            VStack(alignment: .leading, spacing: 3) {
-                Text(transaction.merchantName)
-                    .font(theme.customFont(size: 15, weight: .medium))
-                    .foregroundStyle(theme.textPrimary)
-                    .lineLimit(1)
-                
-                HStack(spacing: 4) {
-                    Text(transaction.category?.name ?? "未分类")
-                        .font(theme.customFont(size: 12, weight: .regular))
+        SketchyCardView(cornerRadius: 12) {
+            HStack(spacing: 14) {
+                // Category Icon - 手绘风格圆圈
+                ZStack {
+                    Circle()
+                        .fill(categoryColor.opacity(0.15))
+                        .frame(width: 50, height: 50)
+
+                    // 手绘圆圈边框
+                    Circle()
+                        .stroke(
+                            categoryColor.opacity(0.3),
+                            style: StrokeStyle(lineWidth: 1.5, dash: [4, 3])
+                        )
+                        .frame(width: 50, height: 50)
+
+                    Image(systemName: transaction.category?.iconName ?? "ellipsis.circle")
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(categoryColor)
+                }
+
+                // Details
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(transaction.merchantName)
+                        .font(theme.customFont(size: 16, weight: .semibold))
+                        .foregroundStyle(theme.textPrimary)
+                        .lineLimit(1)
+
+                    // 手绘标签
+                    SketchyBadge(
+                        text: transaction.category?.name ?? "未分类",
+                        color: categoryColor
+                    )
+                }
+
+                Spacer()
+
+                // Amount - 使用数字滚动
+                VStack(alignment: .trailing, spacing: 2) {
+                    NumberTicker(
+                        value: transactionAmount,
+                        currency: transaction.isExpense ? "-" : "+",
+                        precision: 2
+                    )
+                    .font(theme.amountFont(size: 18))
+                    .foregroundStyle(transaction.isExpense ? theme.expenseRed : theme.incomeGreen)
+
+                    Text(transactionTime)
+                        .font(theme.customFont(size: 11, weight: .medium))
                         .foregroundStyle(theme.textTertiary)
-                    
-                    if let notes = transaction.notes, !notes.isEmpty {
-                        Text("• \(notes)")
-                            .font(theme.customFont(size: 12, weight: .regular))
-                            .foregroundStyle(theme.textTertiary)
-                            .lineLimit(1)
-                    }
                 }
             }
-            
-            Spacer()
-            
-            // Amount
-            Text(formatAmount())
-                .font(theme.amountFont(size: 16))
-                .foregroundStyle(transaction.isExpense ? theme.expenseRed : theme.incomeGreen)
         }
-        .padding(theme.padding)
-        .background(theme.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: theme.cornerRadius))
     }
-    
+
     private var categoryColor: Color {
         if let hex = transaction.category?.colorHex {
             return Color(hex: hex)
         }
         return theme.textSecondary
     }
-    
-    private func formatAmount() -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = Locale.current
-        formatter.maximumFractionDigits = 2
-        let prefix = transaction.isExpense ? "-" : "+"
-        return prefix + (formatter.string(from: transaction.amount as NSDecimalNumber) ?? "¥0")
+
+    private var transactionAmount: Double {
+        NSDecimalNumber(decimal: transaction.amount).doubleValue
+    }
+
+    private var transactionTime: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: transaction.date)
+    }
+}
+
+// MARK: - Old Summary Item (kept for compatibility)
+
+struct SummaryItem: View {
+    @Environment(\.appTheme) private var theme
+
+    let title: String
+    let amount: Decimal
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(theme.customFont(size: 11, weight: .medium))
+                .foregroundStyle(theme.textTertiary)
+
+            // 使用 NumberTicker 显示数字滚动动画
+            NumberTicker(
+                value: doubleValue,
+                currency: "¥",
+                precision: 0
+            )
+            .font(theme.amountFont(size: 16))
+            .foregroundStyle(color)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var doubleValue: Double {
+        NSDecimalNumber(decimal: amount).doubleValue
     }
 }
 
